@@ -32,3 +32,6 @@ eml2img = "EmailToImg.main:main"
 Homepage = "https://github.com/jeffreyparker/eml2img"
 Repository = "https://github.com/jeffreyparker/eml2img"
 Issues = "https://github.com/jeffreyparker/eml2img/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["EmailToImg"]
