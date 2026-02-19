@@ -1,0 +1,34 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "eml2img"
+version = "0.1.0"
+description = "Extract images from .eml email files"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Jeffrey Parker", email = "jeffreyparker@users.noreply.github.com" }
+]
+keywords = ["eml", "email", "image", "extract", "converter"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "Topic :: Utilities",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+[project.scripts]
+eml2img = "EmailToImg.main:main"
+
+[project.urls]
+Homepage = "https://github.com/jeffreyparker/eml2img"
+Repository = "https://github.com/jeffreyparker/eml2img"
+Issues = "https://github.com/jeffreyparker/eml2img/issues"
