@@ -70,25 +70,34 @@ def parse_file(file, output_folder):
     image_content = ""
     looking_for_image_name = False
     looking_for_boundary = False
+    image_count = {}
 
     for line in file:
-        # Detect boundary for multipart sections
+        # Detect boundary for multipart sections (only use the outermost boundary)
         if 'Content-Type: multipart/' in line:
-            boundary = extract_boundary(line)
-            if not boundary:  # Boundary is on next line
-                looking_for_boundary = True
+            if not boundary:
+                boundary = extract_boundary(line)
+                if not boundary:  # Boundary is on next line
+                    looking_for_boundary = True
             continue
-        
+
         # Look for boundary on the next line
         if looking_for_boundary and 'boundary=' in line:
             boundary = '--' + line.strip().split('boundary="')[1].split('"')[0]
             looking_for_boundary = False
             continue
-        
+
         # If we're reading image data, check if this line is a boundary (end of data)
         if is_reading_image_data and line.startswith(boundary):
-            # Save the content to file
-            image_path = os.path.join(output_folder, image_name)
+            # Disambiguate duplicate filenames with a counter
+            count = image_count.get(image_name, 0)
+            image_count[image_name] = count + 1
+            if count > 0:
+                base, ext = os.path.splitext(image_name)
+                final_name = f"{base}_{count}{ext}"
+            else:
+                final_name = image_name
+            image_path = os.path.join(output_folder, final_name)
             save_image(image_path, image_content)
 
             has_found_image = False
