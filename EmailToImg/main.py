@@ -165,6 +165,7 @@ def extract_image_name_from_line(line):
         return line.strip().split('name="')[1].split('"')[0]
     except IndexError:
         print("Error: Could not extract image name from line.")
-        return "unknown_image" 
+        return "unknown_image"
 
-main()
+if __name__ == "__main__":
+    main()

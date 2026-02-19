@@ -9,49 +9,35 @@
 - Easily adaptable for automation or batch processing.
 
 ## Requirements
-- Python 3.x
-- Base64 decoding support (standard Python library).
+- Python 3.9+
+- [`uv`](https://docs.astral.sh/uv/) (no other dependencies)
 
 ## Installation
 
-1. Clone this repository to your local machine:
+No installation needed. Run directly with `uvx`:
 
-   ```bash
-   git clone https://github.com/AlessTheDev/eml2img.git
-   ```
+```bash
+uvx git+https://github.com/jeffreyparker/eml2img your_file.eml
+```
 
-2. Add the folder containing the repository to your system's PATH environment variable to use the `eml2img` command globally.
+Install `uv` if you don't have it yet:
 
-   ### For Windows:
-   - Open the Start menu, search for "Environment Variables," and select "Edit the system environment variables."
-   - Click on "Environment Variables," then find "Path" under "System Variables," and click "Edit."
-   - Add the full path to the cloned repository folder to the list.
+```bash
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-   ### For Mac/Linux:
-   - Install `uv` if you haven't already:
-     ```bash
-     curl -LsSf https://astral.sh/uv/install.sh | sh
-     ```
-   - Navigate to the cloned repository directory:
-     ```bash
-     cd /path/to/eml2img
-     ```
-   - Run the script using `uv`:
-     ```bash
-     uv run EmailToImg/main.py your_file.eml -o output_folder/
-     ```
-   - For batch processing a folder:
-     ```bash
-     uv run EmailToImg/main.py --parse-folder /path/to/eml/folder -o output_folder/
-     ```
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
 
 ## Usage
 
+All examples use `uvx git+https://github.com/jeffreyparker/eml2img` as the command.
+
 ### 1. Display Help
-Use the help command to view all available options and their descriptions:
 
 ```bash
-eml2img -h
+uvx git+https://github.com/jeffreyparker/eml2img -h
 ```
 
 ### 2. Parse a Single `.eml` File
@@ -59,47 +45,28 @@ eml2img -h
 Extract images from a single `.eml` file and save them to a folder based on the filename:
 
 ```bash
-eml2img ./email.eml
+uvx git+https://github.com/jeffreyparker/eml2img ./email.eml
 ```
 > This command will extract images into a folder named `./email` by default.
 
-#### Specify the Output Directory
-
-To extract the images into a specific folder, use the `-o` option:
+To extract into a specific folder, use the `-o` option:
 
 ```bash
-eml2img ./email.eml -o ./OutputDir
-```
-
-Alternatively, you can extract the images directly into the current directory:
-
-```bash
-eml2img ./email.eml -o .
+uvx git+https://github.com/jeffreyparker/eml2img ./email.eml -o ./OutputDir
 ```
 
 ### 3. Parse All `.eml` Files in a Directory
 
-Scan an entire directory to extract images from all `.eml` files within:
+Scan the current directory:
 
 ```bash
-eml2img --parse-folder
-```
-> This will scan the current directory for `.eml` files and extract images to folders named after each email file.
-
-#### Scan a Specific Directory
-
-To scan a specific directory, provide the path:
-
-```bash
-eml2img --parse-folder ./DirToScan
+uvx git+https://github.com/jeffreyparker/eml2img --parse-folder
 ```
 
-#### Specify an Output Directory for Folder Parsing
-
-You can also specify a custom output directory for the extracted images:
+Scan a specific directory with a custom output folder:
 
 ```bash
-eml2img --parse-folder ./DirToScan -o ./OutputDir
+uvx git+https://github.com/jeffreyparker/eml2img --parse-folder ./DirToScan -o ./OutputDir
 ```
 
 ## How it Works
@@ -115,7 +82,7 @@ eml2img --parse-folder ./DirToScan -o ./OutputDir
 If you have a folder full of `.eml` files and you want to extract all images to a single directory:
 
 ```bash
-eml2img --parse-folder ./Emails -o ./AllImages
+uvx git+https://github.com/jeffreyparker/eml2img --parse-folder ./Emails -o ./AllImages
 ```
 
 This will scan all `.eml` files in the `./Emails` directory and save any extracted images to the `./AllImages` folder.
