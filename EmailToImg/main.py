@@ -68,14 +68,24 @@ def parse_file(file, output_folder):
     is_reading_image_data = False
     image_name = ""
     image_content = ""
+    looking_for_image_name = False
+    looking_for_boundary = False
 
     for line in file:
         # Detect boundary for multipart sections
-        if 'Content-Type: multipart/related;' in line:
+        if 'Content-Type: multipart/' in line:
             boundary = extract_boundary(line)
+            if not boundary:  # Boundary is on next line
+                looking_for_boundary = True
             continue
         
-        # Check for end of an image section based on boundary
+        # Look for boundary on the next line
+        if looking_for_boundary and 'boundary=' in line:
+            boundary = '--' + line.strip().split('boundary="')[1].split('"')[0]
+            looking_for_boundary = False
+            continue
+        
+        # If we're reading image data, check if this line is a boundary (end of data)
         if is_reading_image_data and line.startswith(boundary):
             # Save the content to file
             image_path = os.path.join(output_folder, image_name)
@@ -83,19 +93,36 @@ def parse_file(file, output_folder):
 
             has_found_image = False
             is_reading_image_data = False
+            looking_for_image_name = False
             continue
 
+        # If we're reading image data, accumulate the content
         if is_reading_image_data:
             image_content += line
         
-        if 'Content-Type: image/png;' in line:
-            image_name = extract_image_name(line)
+        # Check if we're looking for the image name on the next line
+        if looking_for_image_name:
+            image_name = extract_image_name_from_line(line)
             has_found_image = True
             is_reading_image_data = False
+            looking_for_image_name = False
             image_content = ""
         
-        if has_found_image and len(line.split()) == 0:  # Base64 data is between empty lines
+        if 'Content-Type: image/png;' in line or 'Content-Type: image/jpeg;' in line:
+            # Check if name is on the same line
+            if 'name=' in line:
+                image_name = extract_image_name(line)
+                has_found_image = True
+                is_reading_image_data = False
+                image_content = ""
+            else:
+                # Name is likely on the next line
+                looking_for_image_name = True
+        
+        # Start reading base64 data after we find an image and encounter an empty line
+        if has_found_image and not is_reading_image_data and len(line.strip()) == 0:
             is_reading_image_data = True
+            continue  # Skip the empty line itself
 
 def extract_file_name_no_extension(file_name):
     """Removes the file extension from the file name"""
@@ -104,7 +131,12 @@ def extract_file_name_no_extension(file_name):
 def extract_boundary(str):
     """Extracts the boundary string from the Content-Type header"""
     try:
-        return '--' + str.split('boundary="')[1].split('"')[0]
+        # Handle both single-line and multi-line boundary declarations
+        if 'boundary=' in str:
+            return '--' + str.split('boundary="')[1].split('"')[0]
+        else:
+            # Boundary might be on the next line, return empty for now
+            return ""
     except IndexError:
         print("Error: Could not find boundary in Content-Type.")
         return ""
@@ -121,9 +153,18 @@ def save_image(path, content):
 def extract_image_name(line):
     """Extracts the image file name from the Content-Type header"""
     try:
-        return line.split('; ')[1].split('"')[1]  # name="image.png"
+        return line.split('; ')[1].split('"')[1]  # name="image.png" or name="image.jpg"
     except IndexError:
         print("Error: Could not extract image name.")
-        return "unknown_image.png" 
+        return "unknown_image"
+
+def extract_image_name_from_line(line):
+    """Extracts the image file name from a line that starts with tab and contains name="..." """
+    try:
+        # Handle lines like: \tname="4 months - Pose 1.jpg"
+        return line.strip().split('name="')[1].split('"')[0]
+    except IndexError:
+        print("Error: Could not extract image name from line.")
+        return "unknown_image" 
 
 main()

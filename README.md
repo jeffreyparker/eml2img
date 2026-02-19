@@ -28,7 +28,22 @@
    - Add the full path to the cloned repository folder to the list.
 
    ### For Mac/Linux:
-   - Haven't created a guide for those yet, but you can translate the code of the `email2img.bat` file or contribute to the repo.
+   - Install `uv` if you haven't already:
+     ```bash
+     curl -LsSf https://astral.sh/uv/install.sh | sh
+     ```
+   - Navigate to the cloned repository directory:
+     ```bash
+     cd /path/to/eml2img
+     ```
+   - Run the script using `uv`:
+     ```bash
+     uv run EmailToImg/main.py your_file.eml -o output_folder/
+     ```
+   - For batch processing a folder:
+     ```bash
+     uv run EmailToImg/main.py --parse-folder /path/to/eml/folder -o output_folder/
+     ```
 
 ## Usage
 
